@@ -3,13 +3,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCjwzqt6c1dAl103YuwxkUy5zMJKh3AkSQ",
-  authDomain: "mechainvoice.firebaseapp.com",
-  projectId: "mechainvoice",
-  storageBucket: "mechainvoice.firebasestorage.app",
-  messagingSenderId: "149114786787",
-  appId: "1:149114786787:web:cab2de59c45d724be786d6",
-  measurementId: "G-3K87M6MVBE",
+  apiKey: "AIzaSyCIqOO55mmaAP2fuwN5gIv11s6cJ6XdvVg",
+  authDomain: "workorderform-bd5d1.firebaseapp.com",
+  projectId: "workorderform-bd5d1",
+  storageBucket: "workorderform-bd5d1.firebasestorage.app",
+  messagingSenderId: "856250330633",
+  appId: "1:856250330633:web:278e3c11e42cc14c5112d8",
+  measurementId: "G-HBM4D5V6W0"
 };
 
 // Initialize Firebase

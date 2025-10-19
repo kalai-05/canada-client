@@ -13,35 +13,36 @@ export default function CreateWorkOrder() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (data: Omit<WorkOrder, "id">) => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in",
-        variant: "destructive",
-      });
-      return;
-    }
+const handleSubmit = async (data: Omit<WorkOrder, "id">) => {
+  if (!user) {
+    toast({
+      title: "Error",
+      description: "You must be logged in",
+      variant: "destructive",
+    });
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const id = await firestoreService.createWorkOrder(data, user.uid);
-      toast({
-        title: "Success",
-        description: "Work order created successfully",
-      });
-      navigate(`/work-orders/${id}`);
-    } catch (error) {
-      console.error("Error creating work order:", error);
-      toast({
-        title: "Error",
-        description: "Failed to create work order",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    console.log("Submitting work order data:", data); // Add this line
+    const id = await firestoreService.createWorkOrder(data, user.uid);
+    toast({
+      title: "Success",
+      description: "Work order created successfully",
+    });
+    navigate(`/work-orders/${id}`);
+  } catch (error) {
+    console.error("Error creating work order:", error);
+    toast({
+      title: "Error",
+      description: "Failed to create work order",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50">

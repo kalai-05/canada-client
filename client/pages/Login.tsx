@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,14 +46,13 @@ export default function Login() {
       <Header />
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-100px)]">
         <Card className="w-full max-w-md p-8">
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">
-            Welcome Back
-          </h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900">Welcome Back</h1>
           <p className="text-gray-600 mb-6">
             Sign in to your Airsonic Work Manager account
           </p>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            {/* Email Field */}
             <div>
               <Label htmlFor="email">Email</Label>
               <Input
@@ -64,16 +65,29 @@ export default function Login() {
               />
             </div>
 
-            <div>
+            {/* Password Field with Eye Toggle */}
+            <div className="relative">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="pr-10"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
             </div>
 
             <Button

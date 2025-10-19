@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import AirsonicLogo from "./AirsonicLogo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut } from "lucide-react";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -50,14 +49,13 @@ export default function Header() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">{user.email}</span>
                 <Button
                   onClick={handleLogout}
                   variant="outline"
                   size="sm"
-                  className="border-red-600 text-red-600 hover:bg-red-50"
+                  className="border-red-600 text-red-600 hover:text-white hover:bg-red-600 flex items-center gap-2"
                 >
-                  <LogOut className="w-4 h-4" />
+                  LOGOUT
                 </Button>
               </div>
             </>
