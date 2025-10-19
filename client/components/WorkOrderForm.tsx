@@ -55,14 +55,6 @@ const checklistDefaults = {
     { label: "Air adjustment & controls", ok: false, requiresAttention: false },
   ],
   other: [
-    { label: "Check abnormal odour", ok: false, requiresAttention: false },
-    { label: "Check abnormal noise", ok: false, requiresAttention: false },
-    { label: "Damper motor", ok: false, requiresAttention: false },
-    {
-      label: "Relay & contactor operation",
-      ok: false,
-      requiresAttention: false,
-    },
     { label: "Thermostat operation", ok: false, requiresAttention: false },
     {
       label: "Operation of pressure switch",
@@ -99,7 +91,7 @@ export default function WorkOrderForm({
     customerId: initialData?.customerId || "",
     customerName: initialData?.customerName || "",
     address: initialData?.address || "",
-    pmaType: initialData?.pmaType || "Major inspection and filter change",
+    pmaType: initialData?.pmaType || "Preventive Maintenance Agreement",
     date: initialData?.date || new Date().toISOString().split("T")[0],
     indoorAirQuality:
       initialData?.indoorAirQuality ||

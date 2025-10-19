@@ -29,6 +29,7 @@ export default function WorkOrderDetail() {
     setLoading(true);
     try {
       const order = await firestoreService.getWorkOrder(workOrderId, user.uid);
+      console.log("Fetched work order:", order);
       setWorkOrder(order);
     } catch (error) {
       console.error("Error loading work order:", error);
@@ -93,6 +94,7 @@ export default function WorkOrderDetail() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="container mx-auto px-4 py-8">
+        {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <Link to="/work-orders" className="inline-block mb-4">
@@ -131,21 +133,15 @@ export default function WorkOrderDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Customer ID</p>
-                <p className="font-semibold text-gray-900">
-                  {workOrder.customerId}
-                </p>
+                <p className="font-semibold text-gray-900">{workOrder.customerId}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Customer Name</p>
-                <p className="font-semibold text-gray-900">
-                  {workOrder.customerName}
-                </p>
+                <p className="font-semibold text-gray-900">{workOrder.customerName}</p>
               </div>
               <div className="md:col-span-2">
                 <p className="text-sm text-gray-600">Address</p>
-                <p className="font-semibold text-gray-900">
-                  {workOrder.address}
-                </p>
+                <p className="font-semibold text-gray-900">{workOrder.address}</p>
               </div>
             </div>
           </Card>
@@ -158,9 +154,7 @@ export default function WorkOrderDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Type of PMA</p>
-                <p className="font-semibold text-gray-900">
-                  {workOrder.pmaType}
-                </p>
+                <p className="font-semibold text-gray-900">{workOrder.pmaType}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Date</p>
@@ -206,12 +200,101 @@ export default function WorkOrderDetail() {
             </Card>
           )}
 
+{/* Checklist */}
+{workOrder.checklist && Object.keys(workOrder.checklist).length > 0 && (
+  <Card className="p-6">
+    <h2 className="text-xl font-bold mb-4 text-gray-900">Checklist</h2>
+
+    {/* Split into 2 columns (3 sections per side if 6 total) */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {Object.entries(workOrder.checklist).map(([section, items]: any, index) => (
+        <div key={section} className="mb-6 border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+          <h3 className="text-lg font-semibold capitalize mb-3 text-gray-800 border-b pb-2">
+            {section.replace(/([A-Z])/g, " $1")}
+          </h3>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-gray-50">
+                  <th className="text-left py-2 px-2">Label</th>
+                  <th className="text-left py-2 px-2">OK</th>
+                  <th className="text-left py-2 px-2">Requires Attention</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item: any, i: number) => (
+                  <tr key={i} className="border-b">
+                    <td className="py-2 px-2">{item.label}</td>
+                    <td className="py-2 px-2 text-green-600">
+                      {item.ok ? "✅" : "_"}
+                    </td>
+                    <td className="py-2 px-2 text-yellow-600">
+                      {item.requiresAttention ? "⚠️" : "_"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Card>
+)}
+
+
+          {/* Safety Info */}
+          {workOrder.safetyInfo && Object.keys(workOrder.safetyInfo).length > 0 && (
+            <Card className="p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-900">Safety Info</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(workOrder.safetyInfo).map(([key, value]: any) => (
+                  <div key={key}>
+                    <p className="text-sm text-gray-600 capitalize">{key}</p>
+                    <p className="font-semibold text-gray-900">
+                      {typeof value === "boolean"
+                        ? value
+                          ? "Yes"
+                          : "No"
+                        : String(value)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+
+          {/* Site Conditions */}
+          {workOrder.siteConditions &&
+            Object.keys(workOrder.siteConditions).length > 0 && (
+              <Card className="p-6">
+                <h2 className="text-xl font-bold mb-4 text-gray-900">
+                  Site Conditions
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(workOrder.siteConditions).map(
+                    ([key, value]: any) => (
+                      <div key={key}>
+                        <p className="text-sm text-gray-600 capitalize">{key}</p>
+                        <p className="font-semibold text-gray-900">
+                          {typeof value === "boolean"
+                            ? value
+                              ? "Yes"
+                              : "No"
+                            : String(value)}
+                        </p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </Card>
+            )}
+
           {/* Materials */}
           {workOrder.materials.length > 0 && (
             <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-900">
-                Materials
-              </h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-900">Materials</h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -274,7 +357,6 @@ export default function WorkOrderDetail() {
             </Card>
           )}
 
-          {/* Status Information */}
           <Card className="p-6">
             <h2 className="text-xl font-bold mb-4 text-gray-900">Status</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -292,6 +374,25 @@ export default function WorkOrderDetail() {
                 </p>
                 <p className="font-semibold text-gray-900">
                   {workOrder.recommendationToFollow ? "YES" : "NO"}
+                </p>
+              </div>
+            </div>
+          </Card>
+
+                    {/* Signatures */}
+          <Card className="p-6">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">Signatures</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Technician Signature</p>
+                <p className="font-semibold text-gray-900">
+                  {workOrder.technicianSignature}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Customer Signature</p>
+                <p className="font-semibold text-gray-900">
+                  {workOrder.customerSignature}
                 </p>
               </div>
             </div>
