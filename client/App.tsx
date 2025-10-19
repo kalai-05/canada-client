@@ -6,11 +6,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import CreateWorkOrder from "./pages/CreateWorkOrder";
 import WorkOrderList from "./pages/WorkOrderList";
 import WorkOrderDetail from "./pages/WorkOrderDetail";
 import EditWorkOrder from "./pages/EditWorkOrder";
+import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,17 +24,49 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/create-work-order" element={<CreateWorkOrder />} />
-          <Route path="/work-orders" element={<WorkOrderList />} />
-          <Route path="/work-orders/:id" element={<WorkOrderDetail />} />
-          <Route path="/work-orders/:id/edit" element={<EditWorkOrder />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/create-work-order"
+              element={
+                <ProtectedRoute>
+                  <CreateWorkOrder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/work-orders"
+              element={
+                <ProtectedRoute>
+                  <WorkOrderList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/work-orders/:id"
+              element={
+                <ProtectedRoute>
+                  <WorkOrderDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/work-orders/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <EditWorkOrder />
+                </ProtectedRoute>
+              }
+            />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
