@@ -8,24 +8,27 @@ import { WorkOrder } from "@/types/workorder";
 import { Download, Edit, ArrowLeft } from "lucide-react";
 import { generatePDF } from "@/utils/pdf";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function WorkOrderDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [workOrder, setWorkOrder] = useState<WorkOrder | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    if (id && user) {
       loadWorkOrder(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   const loadWorkOrder = async (workOrderId: string) => {
+    if (!user) return;
     setLoading(true);
     try {
-      const order = await firestoreService.getWorkOrder(workOrderId);
+      const order = await firestoreService.getWorkOrder(workOrderId, user.uid);
       setWorkOrder(order);
     } catch (error) {
       console.error("Error loading work order:", error);

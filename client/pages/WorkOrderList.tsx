@@ -7,26 +7,31 @@ import { firestoreService } from "@/services/firestore";
 import { WorkOrder } from "@/types/workorder";
 import { Trash2, Eye, Edit, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function WorkOrderList() {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
-    loadWorkOrders();
-  }, []);
+    if (user) {
+      loadWorkOrders();
+    }
+  }, [user]);
 
   const loadWorkOrders = async () => {
+    if (!user) return;
     setLoading(true);
     try {
-      const orders = await firestoreService.getAllWorkOrders();
+      const orders = await firestoreService.getAllWorkOrders(user.uid);
       setWorkOrders(orders);
     } catch (error) {
       console.error("Error loading work orders:", error);
       toast({
         title: "Error",
-        description: "Failed to load work orders. Note: Firebase needs to be configured.",
+        description: "Failed to load work orders",
         variant: "destructive",
       });
     } finally {
@@ -35,9 +40,9 @@ export default function WorkOrderList() {
   };
 
   const handleDelete = async (id: string | undefined) => {
-    if (!id) return;
+    if (!id || !user) return;
     try {
-      await firestoreService.deleteWorkOrder(id);
+      await firestoreService.deleteWorkOrder(id, user.uid);
       setWorkOrders(workOrders.filter((wo) => wo.id !== id));
       toast({
         title: "Success",

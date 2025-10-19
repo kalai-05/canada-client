@@ -5,23 +5,26 @@ import WorkOrderForm from "@/components/WorkOrderForm";
 import { firestoreService } from "@/services/firestore";
 import { WorkOrder } from "@/types/workorder";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function EditWorkOrder() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [workOrder, setWorkOrder] = useState<WorkOrder | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && user) {
       loadWorkOrder(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   const loadWorkOrder = async (workOrderId: string) => {
+    if (!user) return;
     try {
-      const order = await firestoreService.getWorkOrder(workOrderId);
+      const order = await firestoreService.getWorkOrder(workOrderId, user.uid);
       setWorkOrder(order);
     } catch (error) {
       console.error("Error loading work order:", error);
@@ -34,10 +37,10 @@ export default function EditWorkOrder() {
   };
 
   const handleSubmit = async (data: Omit<WorkOrder, "id">) => {
-    if (!id) return;
+    if (!id || !user) return;
     setLoading(true);
     try {
-      await firestoreService.updateWorkOrder(id, data);
+      await firestoreService.updateWorkOrder(id, data, user.uid);
       toast({
         title: "Success",
         description: "Work order updated successfully",

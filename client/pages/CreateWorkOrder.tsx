@@ -5,16 +5,27 @@ import WorkOrderForm from "@/components/WorkOrderForm";
 import { firestoreService } from "@/services/firestore";
 import { WorkOrder } from "@/types/workorder";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function CreateWorkOrder() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (data: Omit<WorkOrder, "id">) => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      const id = await firestoreService.createWorkOrder(data);
+      const id = await firestoreService.createWorkOrder(data, user.uid);
       toast({
         title: "Success",
         description: "Work order created successfully",
@@ -24,7 +35,7 @@ export default function CreateWorkOrder() {
       console.error("Error creating work order:", error);
       toast({
         title: "Error",
-        description: "Failed to create work order. Note: Firebase needs to be configured.",
+        description: "Failed to create work order",
         variant: "destructive",
       });
     } finally {
