@@ -1,8 +1,10 @@
+import logo from "../../public/image/logo.png";
+
 export default function AirsonicLogo() {
   return (
     <div className="flex items-center gap-2">
       <img
-        src="/public/image/logo.png"
+        src={logo}
         alt="Airsonic Logo"
         style={{ width: 180, height: "auto" }}
         
