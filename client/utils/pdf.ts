@@ -175,39 +175,49 @@ export async function generatePDF(workOrder: WorkOrder) {
         </div>
       </div>
 
-      ${workOrder.comments ? `
+      ${
+        workOrder.comments
+          ? `
       <div class="section">
         <h2>Comments</h2>
         <div class="value" style="white-space: pre-wrap;">${workOrder.comments}</div>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
 
-      ${workOrder.recommendations ? `
+      ${
+        workOrder.recommendations
+          ? `
       <div class="section">
         <h2>Recommendations</h2>
         <div class="value" style="white-space: pre-wrap;">${workOrder.recommendations}</div>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
 
       <div class="section">
         <h2>Status</h2>
         <div class="grid">
           <div class="form-group">
             <div class="label">Immediate Attention Required</div>
-            <div class="value ${workOrder.immediateAttentionRequired ? 'status-yes' : 'status-no'}">
-              ${workOrder.immediateAttentionRequired ? 'YES' : 'NO'}
+            <div class="value ${workOrder.immediateAttentionRequired ? "status-yes" : "status-no"}">
+              ${workOrder.immediateAttentionRequired ? "YES" : "NO"}
             </div>
           </div>
           <div class="form-group">
             <div class="label">Recommendation to Follow</div>
-            <div class="value ${workOrder.recommendationToFollow ? 'status-yes' : 'status-no'}">
-              ${workOrder.recommendationToFollow ? 'YES' : 'NO'}
+            <div class="value ${workOrder.recommendationToFollow ? "status-yes" : "status-no"}">
+              ${workOrder.recommendationToFollow ? "YES" : "NO"}
             </div>
           </div>
         </div>
       </div>
 
-      ${workOrder.materials.length > 0 ? `
+      ${
+        workOrder.materials.length > 0
+          ? `
       <div class="section">
         <h2>Materials / Miscellaneous</h2>
         <table>
@@ -220,20 +230,28 @@ export async function generatePDF(workOrder: WorkOrder) {
             </tr>
           </thead>
           <tbody>
-            ${workOrder.materials.map(m => `
+            ${workOrder.materials
+              .map(
+                (m) => `
               <tr>
                 <td>${m.source}</td>
                 <td>${m.qty}</td>
                 <td>${m.description}</td>
                 <td>${m.po}</td>
               </tr>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </tbody>
         </table>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
 
-      ${workOrder.hours.length > 0 ? `
+      ${
+        workOrder.hours.length > 0
+          ? `
       <div class="section">
         <h2>Hours Worked</h2>
         <table>
@@ -249,7 +267,9 @@ export async function generatePDF(workOrder: WorkOrder) {
             </tr>
           </thead>
           <tbody>
-            ${workOrder.hours.map(h => `
+            ${workOrder.hours
+              .map(
+                (h) => `
               <tr>
                 <td>${h.date}</td>
                 <td>${h.hours}</td>
@@ -259,11 +279,15 @@ export async function generatePDF(workOrder: WorkOrder) {
                 <td>${h.tech}</td>
                 <td>${h.initial}</td>
               </tr>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </tbody>
         </table>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
 
       <div class="signature-section">
         <div class="signature-line">
@@ -274,7 +298,7 @@ export async function generatePDF(workOrder: WorkOrder) {
         <div class="signature-line">
           <div class="line"></div>
           <div class="label-small">Technician Signature</div>
-          <div class="label-small">Tech: ${workOrder.authorizedBy || '_______________'}</div>
+          <div class="label-small">Tech: ${workOrder.authorizedBy || "_______________"}</div>
         </div>
       </div>
 

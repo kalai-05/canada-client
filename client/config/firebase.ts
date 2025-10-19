@@ -9,7 +9,7 @@ const firebaseConfig = {
   storageBucket: "mechainvoice.firebasestorage.app",
   messagingSenderId: "149114786787",
   appId: "1:149114786787:web:cab2de59c45d724be786d6",
-  measurementId: "G-3K87M6MVBE"
+  measurementId: "G-3K87M6MVBE",
 };
 
 // Initialize Firebase

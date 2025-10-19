@@ -39,7 +39,11 @@ const checklistDefaults = {
     { label: "Condition of insulation", ok: false, requiresAttention: false },
   ],
   fanFanDrives: [
-    { label: "Lubricate fan & motor bearings", ok: false, requiresAttention: false },
+    {
+      label: "Lubricate fan & motor bearings",
+      ok: false,
+      requiresAttention: false,
+    },
     { label: "Drive & pully alignment", ok: false, requiresAttention: false },
     { label: "Condition of motor", ok: false, requiresAttention: false },
     { label: "Fan wheel housing", ok: false, requiresAttention: false },
@@ -54,18 +58,34 @@ const checklistDefaults = {
     { label: "Check abnormal odour", ok: false, requiresAttention: false },
     { label: "Check abnormal noise", ok: false, requiresAttention: false },
     { label: "Damper motor", ok: false, requiresAttention: false },
-    { label: "Relay & contactor operation", ok: false, requiresAttention: false },
+    {
+      label: "Relay & contactor operation",
+      ok: false,
+      requiresAttention: false,
+    },
     { label: "Thermostat operation", ok: false, requiresAttention: false },
-    { label: "Operation of pressure switch", ok: false, requiresAttention: false },
+    {
+      label: "Operation of pressure switch",
+      ok: false,
+      requiresAttention: false,
+    },
     { label: "Starter & contact pts.", ok: false, requiresAttention: false },
     { label: "Check & adjust belts", ok: false, requiresAttention: false },
   ],
   electricalControls: [
     { label: "Starter & contact pts.", ok: false, requiresAttention: false },
-    { label: "Operation of pressure switch", ok: false, requiresAttention: false },
+    {
+      label: "Operation of pressure switch",
+      ok: false,
+      requiresAttention: false,
+    },
     { label: "Thermostat operation", ok: false, requiresAttention: false },
     { label: "Damper motor", ok: false, requiresAttention: false },
-    { label: "Relay & contactor operation", ok: false, requiresAttention: false },
+    {
+      label: "Relay & contactor operation",
+      ok: false,
+      requiresAttention: false,
+    },
   ],
 };
 
@@ -99,7 +119,8 @@ export default function WorkOrderForm({
     },
     comments: initialData?.comments || "",
     recommendations: initialData?.recommendations || "",
-    immediateAttentionRequired: initialData?.immediateAttentionRequired || false,
+    immediateAttentionRequired:
+      initialData?.immediateAttentionRequired || false,
     recommendationToFollow: initialData?.recommendationToFollow || false,
     materials: initialData?.materials || [],
     hours: initialData?.hours || [],
@@ -141,14 +162,14 @@ export default function WorkOrderForm({
   const toggleChecklistItem = (
     section: keyof typeof checklistDefaults,
     index: number,
-    field: "ok" | "requiresAttention"
+    field: "ok" | "requiresAttention",
   ) => {
     setFormData((prev) => ({
       ...prev,
       checklist: {
         ...prev.checklist,
         [section]: prev.checklist[section].map((item, i) =>
-          i === index ? { ...item, [field]: !item[field] } : item
+          i === index ? { ...item, [field]: !item[field] } : item,
         ),
       },
     }));
@@ -261,7 +282,9 @@ export default function WorkOrderForm({
               id="date"
               type="date"
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
             />
           </div>
         </div>
@@ -362,7 +385,7 @@ export default function WorkOrderForm({
                             toggleChecklistItem(
                               section as keyof typeof checklistDefaults,
                               index,
-                              "ok"
+                              "ok",
                             )
                           }
                         />
@@ -379,7 +402,7 @@ export default function WorkOrderForm({
                             toggleChecklistItem(
                               section as keyof typeof checklistDefaults,
                               index,
-                              "requiresAttention"
+                              "requiresAttention",
                             )
                           }
                         />
@@ -417,7 +440,9 @@ export default function WorkOrderForm({
 
       {/* Site Conditions */}
       <Card className="p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-900">Site Conditions</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-900">
+          Site Conditions
+        </h2>
         <div className="space-y-3">
           <label className="flex items-center gap-2">
             <Checkbox
@@ -881,7 +906,11 @@ export default function WorkOrderForm({
           disabled={loading}
           className="flex-1 bg-red-600 hover:bg-red-700 text-white"
         >
-          {loading ? "Saving..." : initialData ? "Update Work Order" : "Create Work Order"}
+          {loading
+            ? "Saving..."
+            : initialData
+              ? "Update Work Order"
+              : "Create Work Order"}
         </Button>
       </div>
     </form>

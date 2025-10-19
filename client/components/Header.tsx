@@ -25,11 +25,17 @@ export default function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          <Link to="/" className="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors">
+          <Link
+            to="/"
+            className="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors"
+          >
             Dashboard
           </Link>
           {user && (
-            <Link to="/work-orders" className="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors">
+            <Link
+              to="/work-orders"
+              className="text-sm font-medium text-gray-700 hover:text-red-600 transition-colors"
+            >
               Work Orders
             </Link>
           )}
@@ -58,7 +64,10 @@ export default function Header() {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="outline" className="border-gray-300 text-gray-700">
+                <Button
+                  variant="outline"
+                  className="border-gray-300 text-gray-700"
+                >
                   Sign In
                 </Button>
               </Link>

@@ -44,7 +44,9 @@ export default function Login() {
       <Header />
       <div className="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-100px)]">
         <Card className="w-full max-w-md p-8">
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">Welcome Back</h1>
+          <h1 className="text-3xl font-bold mb-2 text-gray-900">
+            Welcome Back
+          </h1>
           <p className="text-gray-600 mb-6">
             Sign in to your Airsonic Work Manager account
           </p>

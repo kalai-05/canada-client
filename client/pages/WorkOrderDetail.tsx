@@ -158,16 +158,16 @@ export default function WorkOrderDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Type of PMA</p>
-                <p className="font-semibold text-gray-900">{workOrder.pmaType}</p>
+                <p className="font-semibold text-gray-900">
+                  {workOrder.pmaType}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Date</p>
                 <p className="font-semibold text-gray-900">{workOrder.date}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">
-                  Indoor Air Quality
-                </p>
+                <p className="text-sm text-gray-600">Indoor Air Quality</p>
                 <p className="font-semibold text-gray-900">
                   {workOrder.indoorAirQuality}
                 </p>
@@ -209,7 +209,9 @@ export default function WorkOrderDetail() {
           {/* Materials */}
           {workOrder.materials.length > 0 && (
             <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-900">Materials</h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-900">
+                Materials
+              </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -285,7 +287,9 @@ export default function WorkOrderDetail() {
                 </p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Recommendation to Follow</p>
+                <p className="text-sm text-gray-600">
+                  Recommendation to Follow
+                </p>
                 <p className="font-semibold text-gray-900">
                   {workOrder.recommendationToFollow ? "YES" : "NO"}
                 </p>

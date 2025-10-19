@@ -8,15 +8,9 @@ export default function AirsonicLogo() {
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Red triangle */}
-        <polygon
-          points="50,15 35,50 50,45"
-          fill="#FF0000"
-        />
+        <polygon points="50,15 35,50 50,45" fill="#FF0000" />
         {/* Blue triangle */}
-        <polygon
-          points="50,45 65,50 50,15"
-          fill="#0052CC"
-        />
+        <polygon points="50,45 65,50 50,15" fill="#0052CC" />
       </svg>
       <div className="flex flex-col leading-tight">
         <span className="font-bold text-sm">

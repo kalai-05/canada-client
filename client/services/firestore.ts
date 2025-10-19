@@ -17,10 +17,7 @@ import { WorkOrder } from "@/types/workorder";
 const COLLECTION_NAME = "workOrders";
 
 export const firestoreService = {
-  async createWorkOrder(
-    workOrder: Omit<WorkOrder, "id">,
-    userId: string
-  ) {
+  async createWorkOrder(workOrder: Omit<WorkOrder, "id">, userId: string) {
     try {
       const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         ...workOrder,
@@ -59,7 +56,7 @@ export const firestoreService = {
       const q = query(
         collection(db, COLLECTION_NAME),
         where("userId", "==", userId),
-        orderBy("createdAt", "desc")
+        orderBy("createdAt", "desc"),
       );
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc) => ({
@@ -75,7 +72,7 @@ export const firestoreService = {
   async updateWorkOrder(
     id: string,
     updates: Partial<WorkOrder>,
-    userId: string
+    userId: string,
   ) {
     try {
       // Verify ownership

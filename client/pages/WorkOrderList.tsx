@@ -88,11 +88,16 @@ export default function WorkOrderList() {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {workOrders.map((order) => (
-              <Card key={order.id} className="p-6 hover:shadow-md transition-shadow">
+              <Card
+                key={order.id}
+                className="p-6 hover:shadow-md transition-shadow"
+              >
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Work Order ID</p>
-                    <p className="font-bold text-gray-900">{order.workOrderId}</p>
+                    <p className="font-bold text-gray-900">
+                      {order.workOrderId}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Customer</p>
