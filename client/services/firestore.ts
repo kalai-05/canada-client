@@ -1,29 +1,46 @@
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  getDocs,
-  getDoc,
-  query,
-  orderBy,
-  Timestamp,
-} from "firebase/firestore";
-import { db } from "@/config/firebase";
 import { WorkOrder } from "@/types/workorder";
 
 const COLLECTION_NAME = "workOrders";
 
+// Local storage fallback for work orders
+// In production, connect Firebase through MCP integrations
+const getStorageKey = () => `${COLLECTION_NAME}:all`;
+
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+function getWorkOrdersFromStorage(): WorkOrder[] {
+  try {
+    const stored = localStorage.getItem(getStorageKey());
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveWorkOrdersToStorage(orders: WorkOrder[]) {
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(orders));
+  } catch {
+    console.error("Failed to save to localStorage");
+  }
+}
+
 export const firestoreService = {
   async createWorkOrder(workOrder: Omit<WorkOrder, "id">) {
     try {
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+      const id = generateId();
+      const orders = getWorkOrdersFromStorage();
+      const newOrder: WorkOrder = {
         ...workOrder,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-      });
-      return docRef.id;
+        id,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      orders.push(newOrder);
+      saveWorkOrdersToStorage(orders);
+      return id;
     } catch (error) {
       console.error("Error creating work order:", error);
       throw error;
@@ -32,12 +49,8 @@ export const firestoreService = {
 
   async getWorkOrder(id: string) {
     try {
-      const docRef = doc(db, COLLECTION_NAME, id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() } as WorkOrder;
-      }
-      return null;
+      const orders = getWorkOrdersFromStorage();
+      return orders.find((o) => o.id === id) || null;
     } catch (error) {
       console.error("Error fetching work order:", error);
       throw error;
@@ -46,15 +59,11 @@ export const firestoreService = {
 
   async getAllWorkOrders() {
     try {
-      const q = query(
-        collection(db, COLLECTION_NAME),
-        orderBy("createdAt", "desc")
+      const orders = getWorkOrdersFromStorage();
+      return orders.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as WorkOrder[];
     } catch (error) {
       console.error("Error fetching work orders:", error);
       throw error;
@@ -63,11 +72,17 @@ export const firestoreService = {
 
   async updateWorkOrder(id: string, updates: Partial<WorkOrder>) {
     try {
-      const docRef = doc(db, COLLECTION_NAME, id);
-      await updateDoc(docRef, {
-        ...updates,
-        updatedAt: Timestamp.now(),
-      });
+      const orders = getWorkOrdersFromStorage();
+      const index = orders.findIndex((o) => o.id === id);
+      if (index !== -1) {
+        orders[index] = {
+          ...orders[index],
+          ...updates,
+          id,
+          updatedAt: new Date().toISOString(),
+        };
+        saveWorkOrdersToStorage(orders);
+      }
     } catch (error) {
       console.error("Error updating work order:", error);
       throw error;
@@ -76,8 +91,9 @@ export const firestoreService = {
 
   async deleteWorkOrder(id: string) {
     try {
-      const docRef = doc(db, COLLECTION_NAME, id);
-      await deleteDoc(docRef);
+      const orders = getWorkOrdersFromStorage();
+      const filtered = orders.filter((o) => o.id !== id);
+      saveWorkOrdersToStorage(filtered);
     } catch (error) {
       console.error("Error deleting work order:", error);
       throw error;
