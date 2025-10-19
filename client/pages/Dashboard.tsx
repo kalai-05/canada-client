@@ -18,14 +18,12 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                <span className="text-red-600">Airsonic</span>
+                <span style={{color:"#E52B2B"}}>Airsonic</span>
                 <br />
-                <span className="text-gray-900">Work Manager</span>
+                <span style={{color:"#0F65D4"}}>Work Manager</span>
               </h1>
-              <p className="text-lg text-gray-600 mb-6">
-                Professional HVAC work order management system for Airsonic
-                Mechanical Inc. Streamline your service operations with digital
-                forms, signatures, and PDF generation.
+              <p className=" text-2xl text-gray-600 mb-6">
+               "Breathe Better with Airsonic"
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 {user ? (
@@ -81,24 +79,24 @@ export default function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-blue-500 rounded-lg transform rotate-3 opacity-20" />
                 <div className="relative bg-white p-8 rounded-lg shadow-lg">
                   <h3 className="text-xl font-bold text-gray-900 mb-4">
-                    HVAC Services
+                    Our Services
                   </h3>
                   <ul className="space-y-3 text-gray-600">
                     <li className="flex items-center gap-2">
                       <Zap className="w-5 h-5 text-red-600" />
-                      Air Conditioning & Heating
+                      Air Conditioning 
                     </li>
                     <li className="flex items-center gap-2">
                       <Zap className="w-5 h-5 text-red-600" />
-                      Water Heater & Tankless
+                      Ventilation & Indoor Air Quality
                     </li>
                     <li className="flex items-center gap-2">
                       <Zap className="w-5 h-5 text-red-600" />
-                      Boiler & Heat Pump Systems
+                      Heating Services
                     </li>
                     <li className="flex items-center gap-2">
                       <Zap className="w-5 h-5 text-red-600" />
-                      Rooftop Units
+                      Refrigeration Services
                     </li>
                   </ul>
                 </div>
