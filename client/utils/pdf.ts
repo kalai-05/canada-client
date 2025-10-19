@@ -1,262 +1,302 @@
-import { jsPDF } from "jspdf";
 import { WorkOrder } from "@/types/workorder";
 
 export async function generatePDF(workOrder: WorkOrder) {
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4",
-  });
+  // Create HTML content for printing as PDF
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Work Order ${workOrder.workOrderId}</title>
+      <style>
+        @page {
+          size: A4;
+          margin: 0;
+        }
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 20px;
+          font-size: 12px;
+          line-height: 1.5;
+        }
+        .header {
+          background: linear-gradient(135deg, #dc143c 0%, #1e40af 100%);
+          color: white;
+          padding: 20px;
+          text-align: center;
+          margin: -20px -20px 20px -20px;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 24px;
+        }
+        .header p {
+          margin: 5px 0 0 0;
+          font-size: 12px;
+        }
+        .section {
+          margin-bottom: 20px;
+          border: 1px solid #ddd;
+          padding: 10px;
+        }
+        .section h2 {
+          margin: 0 0 10px 0;
+          font-size: 14px;
+          background: #f0f0f0;
+          padding: 5px;
+          border-left: 4px solid #dc143c;
+        }
+        .grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .form-group {
+          margin-bottom: 8px;
+        }
+        .label {
+          font-weight: bold;
+          color: #333;
+          font-size: 11px;
+          text-transform: uppercase;
+        }
+        .value {
+          color: #666;
+          margin-top: 2px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+        th {
+          background: #dc143c;
+          color: white;
+          padding: 8px;
+          text-align: left;
+          font-size: 11px;
+          border: 1px solid #ddd;
+        }
+        td {
+          padding: 8px;
+          border: 1px solid #ddd;
+          font-size: 11px;
+        }
+        .checkbox {
+          display: inline-block;
+          margin-right: 10px;
+        }
+        .status-yes {
+          color: #dc143c;
+          font-weight: bold;
+        }
+        .status-no {
+          color: #666;
+        }
+        .footer {
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          font-size: 10px;
+          text-align: center;
+          color: #999;
+        }
+        .signature-section {
+          margin-top: 30px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        .signature-line {
+          text-align: center;
+        }
+        .line {
+          border-bottom: 1px solid #000;
+          margin: 30px 0 5px 0;
+        }
+        .label-small {
+          font-size: 10px;
+          margin-top: 5px;
+        }
+        @media print {
+          body { margin: 0; padding: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>🔴 AIRSONIC 🔵 MECHANICAL INC.</h1>
+        <p>Residential & Commercial HVAC Services</p>
+      </div>
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 10;
-  const contentWidth = pageWidth - 2 * margin;
-  let yPos = margin;
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 18px;">PMA WORK ORDER</h2>
+        <p style="margin: 5px 0;">Work Order ID: <strong>${workOrder.workOrderId}</strong></p>
+      </div>
 
-  // Header with logo and company info
-  doc.setFillColor(220, 20, 60); // Crimson red
-  doc.rect(0, 0, pageWidth, 30, "F");
+      <div class="section">
+        <h2>Customer Information</h2>
+        <div class="grid">
+          <div class="form-group">
+            <div class="label">Customer ID</div>
+            <div class="value">${workOrder.customerId}</div>
+          </div>
+          <div class="form-group">
+            <div class="label">Customer Name</div>
+            <div class="value">${workOrder.customerName}</div>
+          </div>
+          <div class="form-group" style="grid-column: 1/-1;">
+            <div class="label">Address</div>
+            <div class="value">${workOrder.address}</div>
+          </div>
+        </div>
+      </div>
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
-  doc.text("AIRSONIC MECHANICAL INC.", pageWidth / 2, 12, {
-    align: "center",
-  });
+      <div class="section">
+        <h2>Service Information</h2>
+        <div class="grid">
+          <div class="form-group">
+            <div class="label">Type of PMA</div>
+            <div class="value">${workOrder.pmaType}</div>
+          </div>
+          <div class="form-group">
+            <div class="label">Date</div>
+            <div class="value">${workOrder.date}</div>
+          </div>
+          <div class="form-group">
+            <div class="label">Overall Condition</div>
+            <div class="value">${workOrder.overallCondition}</div>
+          </div>
+          <div class="form-group">
+            <div class="label">Indoor Air Quality</div>
+            <div class="value">${workOrder.indoorAirQuality}</div>
+          </div>
+        </div>
+      </div>
 
-  doc.setFontSize(10);
-  doc.text(
-    "Residential & Commercial HVAC Services",
-    pageWidth / 2,
-    20,
-    { align: "center" }
-  );
+      ${workOrder.comments ? `
+      <div class="section">
+        <h2>Comments</h2>
+        <div class="value" style="white-space: pre-wrap;">${workOrder.comments}</div>
+      </div>
+      ` : ''}
 
-  yPos = 35;
+      ${workOrder.recommendations ? `
+      <div class="section">
+        <h2>Recommendations</h2>
+        <div class="value" style="white-space: pre-wrap;">${workOrder.recommendations}</div>
+      </div>
+      ` : ''}
 
-  // Title
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(16);
-  doc.setFont(undefined, "bold");
-  doc.text("PMA WORK ORDER", pageWidth / 2, yPos, { align: "center" });
-  yPos += 10;
+      <div class="section">
+        <h2>Status</h2>
+        <div class="grid">
+          <div class="form-group">
+            <div class="label">Immediate Attention Required</div>
+            <div class="value ${workOrder.immediateAttentionRequired ? 'status-yes' : 'status-no'}">
+              ${workOrder.immediateAttentionRequired ? 'YES' : 'NO'}
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="label">Recommendation to Follow</div>
+            <div class="value ${workOrder.recommendationToFollow ? 'status-yes' : 'status-no'}">
+              ${workOrder.recommendationToFollow ? 'YES' : 'NO'}
+            </div>
+          </div>
+        </div>
+      </div>
 
-  // Work Order ID
-  doc.setFontSize(11);
-  doc.text(`Work Order ID: ${workOrder.workOrderId}`, margin, yPos);
-  yPos += 8;
+      ${workOrder.materials.length > 0 ? `
+      <div class="section">
+        <h2>Materials / Miscellaneous</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>QTY</th>
+              <th>Description</th>
+              <th>PO</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${workOrder.materials.map(m => `
+              <tr>
+                <td>${m.source}</td>
+                <td>${m.qty}</td>
+                <td>${m.description}</td>
+                <td>${m.po}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ` : ''}
 
-  // Customer Information Section
-  doc.setFontSize(12);
-  doc.setFont(undefined, "bold");
-  doc.text("Customer Information", margin, yPos);
-  yPos += 7;
+      ${workOrder.hours.length > 0 ? `
+      <div class="section">
+        <h2>Hours Worked</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>OT</th>
+              <th>RT</th>
+              <th>Parking</th>
+              <th>Tech</th>
+              <th>Initial</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${workOrder.hours.map(h => `
+              <tr>
+                <td>${h.date}</td>
+                <td>${h.hours}</td>
+                <td>${h.ot}</td>
+                <td>${h.rt}</td>
+                <td>${h.parking}</td>
+                <td>${h.tech}</td>
+                <td>${h.initial}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ` : ''}
 
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(10);
-  doc.text(`Customer ID: ${workOrder.customerId}`, margin + 5, yPos);
-  yPos += 5;
-  doc.text(`Customer Name: ${workOrder.customerName}`, margin + 5, yPos);
-  yPos += 5;
-  doc.text(`Address: ${workOrder.address}`, margin + 5, yPos);
-  yPos += 8;
+      <div class="signature-section">
+        <div class="signature-line">
+          <div class="line"></div>
+          <div class="label-small">Customer Signature</div>
+          <div class="label-small">Date: ${new Date().toLocaleDateString()}</div>
+        </div>
+        <div class="signature-line">
+          <div class="line"></div>
+          <div class="label-small">Technician Signature</div>
+          <div class="label-small">Tech: ${workOrder.authorizedBy || '_______________'}</div>
+        </div>
+      </div>
 
-  // Service Information
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(12);
-  doc.text("Service Information", margin, yPos);
-  yPos += 7;
+      <div class="footer">
+        <p>Generated on ${new Date().toLocaleDateString()} | Work Order ID: ${workOrder.workOrderId}</p>
+        <p>Airsonic Mechanical Inc. | Residential & Commercial HVAC Services</p>
+      </div>
+    </body>
+    </html>
+  `;
 
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(10);
-  doc.text(`Type of PMA: ${workOrder.pmaType}`, margin + 5, yPos);
-  yPos += 5;
-  doc.text(`Date: ${workOrder.date}`, margin + 5, yPos);
-  yPos += 5;
-  doc.text(`Overall Condition: ${workOrder.overallCondition}`, margin + 5, yPos);
-  yPos += 8;
+  // Create a new window/tab for printing
+  const printWindow = window.open("", "", "height=600,width=800");
+  if (printWindow) {
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
 
-  // Comments
-  if (workOrder.comments) {
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(12);
-    doc.text("Comments", margin, yPos);
-    yPos += 7;
-
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(10);
-    const commentLines = doc.splitTextToSize(workOrder.comments, contentWidth - 5);
-    doc.text(commentLines, margin + 5, yPos);
-    yPos += commentLines.length * 5 + 3;
+    // Wait for the document to load before printing
+    setTimeout(() => {
+      printWindow.print();
+      // Optionally close the window after printing
+      printWindow.close();
+    }, 250);
   }
-
-  // Recommendations
-  if (workOrder.recommendations) {
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(12);
-    doc.text("Recommendations", margin, yPos);
-    yPos += 7;
-
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(10);
-    const recLines = doc.splitTextToSize(
-      workOrder.recommendations,
-      contentWidth - 5
-    );
-    doc.text(recLines, margin + 5, yPos);
-    yPos += recLines.length * 5 + 3;
-  }
-
-  // Status Information
-  yPos += 3;
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(12);
-  doc.text("Status", margin, yPos);
-  yPos += 7;
-
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(10);
-  doc.text(
-    `Immediate Attention Required: ${workOrder.immediateAttentionRequired ? "YES" : "NO"}`,
-    margin + 5,
-    yPos
-  );
-  yPos += 5;
-  doc.text(
-    `Recommendation to Follow: ${workOrder.recommendationToFollow ? "YES" : "NO"}`,
-    margin + 5,
-    yPos
-  );
-  yPos += 8;
-
-  // Materials Table
-  if (workOrder.materials.length > 0) {
-    yPos += 3;
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(12);
-    doc.text("Materials / Miscellaneous", margin, yPos);
-    yPos += 7;
-
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(9);
-
-    const tableData = [
-      ["Source", "QTY", "Description", "PO"],
-      ...workOrder.materials.map((m) => [
-        m.source,
-        m.qty.toString(),
-        m.description,
-        m.po,
-      ]),
-    ];
-
-    doc.autoTable({
-      head: tableData.slice(0, 1),
-      body: tableData.slice(1),
-      startY: yPos,
-      margin: margin,
-      theme: "grid",
-      styles: { fontSize: 9 },
-      headStyles: {
-        fillColor: [220, 20, 60],
-        textColor: [255, 255, 255],
-      },
-    });
-
-    yPos = (doc as any).lastAutoTable.finalY + 5;
-  }
-
-  // Hours Worked Table
-  if (workOrder.hours.length > 0) {
-    yPos += 3;
-    if (yPos > pageHeight - 40) {
-      doc.addPage();
-      yPos = margin;
-    }
-
-    doc.setFont(undefined, "bold");
-    doc.setFontSize(12);
-    doc.text("Hours Worked", margin, yPos);
-    yPos += 7;
-
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(9);
-
-    const hoursData = [
-      ["Date", "Hours", "OT", "RT", "Parking", "Tech", "Initial"],
-      ...workOrder.hours.map((h) => [
-        h.date,
-        h.hours.toString(),
-        h.ot.toString(),
-        h.rt.toString(),
-        h.parking.toString(),
-        h.tech,
-        h.initial,
-      ]),
-    ];
-
-    doc.autoTable({
-      head: hoursData.slice(0, 1),
-      body: hoursData.slice(1),
-      startY: yPos,
-      margin: margin,
-      theme: "grid",
-      styles: { fontSize: 8 },
-      headStyles: {
-        fillColor: [0, 82, 204],
-        textColor: [255, 255, 255],
-      },
-    });
-
-    yPos = (doc as any).lastAutoTable.finalY + 5;
-  }
-
-  // Signatures Section
-  if (yPos > pageHeight - 50) {
-    doc.addPage();
-    yPos = margin;
-  }
-
-  yPos += 5;
-  doc.setFont(undefined, "bold");
-  doc.setFontSize(12);
-  doc.text("Signatures & Authorization", margin, yPos);
-  yPos += 7;
-
-  doc.setFont(undefined, "normal");
-  doc.setFontSize(10);
-
-  // Signature lines
-  const lineY = yPos + 20;
-  const signatureLineLength = 40;
-
-  // Customer Signature
-  doc.line(margin + 5, lineY, margin + 5 + signatureLineLength, lineY);
-  doc.setFontSize(9);
-  doc.text("Customer Signature", margin + 5, lineY + 5);
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, margin + 5, lineY + 10);
-
-  // Technician Signature
-  doc.line(
-    margin + 60,
-    lineY,
-    margin + 60 + signatureLineLength,
-    lineY
-  );
-  doc.text("Technician Signature", margin + 60, lineY + 5);
-  doc.text(`Tech: ${workOrder.authorizedBy || "_______________"}`, margin + 60, lineY + 10);
-
-  // Footer
-  const footerY = pageHeight - 10;
-  doc.setFontSize(8);
-  doc.setTextColor(100, 100, 100);
-  doc.text(
-    `Generated on ${new Date().toLocaleDateString()} | Work Order ID: ${workOrder.workOrderId}`,
-    pageWidth / 2,
-    footerY,
-    { align: "center" }
-  );
-
-  // Save the PDF
-  doc.save(`WorkOrder_${workOrder.workOrderId}.pdf`);
 }
