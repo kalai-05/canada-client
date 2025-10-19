@@ -1,99 +1,110 @@
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  getDoc,
+  query,
+  orderBy,
+  where,
+  Timestamp,
+} from "firebase/firestore";
+import { db } from "@/config/firebase";
 import { WorkOrder } from "@/types/workorder";
 
 const COLLECTION_NAME = "workOrders";
 
-// Local storage fallback for work orders
-// In production, connect Firebase through MCP integrations
-const getStorageKey = () => `${COLLECTION_NAME}:all`;
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
-function getWorkOrdersFromStorage(): WorkOrder[] {
-  try {
-    const stored = localStorage.getItem(getStorageKey());
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveWorkOrdersToStorage(orders: WorkOrder[]) {
-  try {
-    localStorage.setItem(getStorageKey(), JSON.stringify(orders));
-  } catch {
-    console.error("Failed to save to localStorage");
-  }
-}
-
 export const firestoreService = {
-  async createWorkOrder(workOrder: Omit<WorkOrder, "id">) {
+  async createWorkOrder(
+    workOrder: Omit<WorkOrder, "id">,
+    userId: string
+  ) {
     try {
-      const id = generateId();
-      const orders = getWorkOrdersFromStorage();
-      const newOrder: WorkOrder = {
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         ...workOrder,
-        id,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      orders.push(newOrder);
-      saveWorkOrdersToStorage(orders);
-      return id;
+        userId,
+        createdAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      });
+      return docRef.id;
     } catch (error) {
       console.error("Error creating work order:", error);
       throw error;
     }
   },
 
-  async getWorkOrder(id: string) {
+  async getWorkOrder(id: string, userId: string) {
     try {
-      const orders = getWorkOrdersFromStorage();
-      return orders.find((o) => o.id === id) || null;
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        // Ensure user owns this work order
+        if (data.userId !== userId) {
+          throw new Error("Unauthorized");
+        }
+        return { id: docSnap.id, ...data } as WorkOrder;
+      }
+      return null;
     } catch (error) {
       console.error("Error fetching work order:", error);
       throw error;
     }
   },
 
-  async getAllWorkOrders() {
+  async getAllWorkOrders(userId: string) {
     try {
-      const orders = getWorkOrdersFromStorage();
-      return orders.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      const q = query(
+        collection(db, COLLECTION_NAME),
+        where("userId", "==", userId),
+        orderBy("createdAt", "desc")
       );
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as WorkOrder[];
     } catch (error) {
       console.error("Error fetching work orders:", error);
       throw error;
     }
   },
 
-  async updateWorkOrder(id: string, updates: Partial<WorkOrder>) {
+  async updateWorkOrder(
+    id: string,
+    updates: Partial<WorkOrder>,
+    userId: string
+  ) {
     try {
-      const orders = getWorkOrdersFromStorage();
-      const index = orders.findIndex((o) => o.id === id);
-      if (index !== -1) {
-        orders[index] = {
-          ...orders[index],
-          ...updates,
-          id,
-          updatedAt: new Date().toISOString(),
-        };
-        saveWorkOrdersToStorage(orders);
+      // Verify ownership
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists() || docSnap.data().userId !== userId) {
+        throw new Error("Unauthorized");
       }
+
+      await updateDoc(docRef, {
+        ...updates,
+        updatedAt: Timestamp.now(),
+      });
     } catch (error) {
       console.error("Error updating work order:", error);
       throw error;
     }
   },
 
-  async deleteWorkOrder(id: string) {
+  async deleteWorkOrder(id: string, userId: string) {
     try {
-      const orders = getWorkOrdersFromStorage();
-      const filtered = orders.filter((o) => o.id !== id);
-      saveWorkOrdersToStorage(filtered);
+      // Verify ownership
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists() || docSnap.data().userId !== userId) {
+        throw new Error("Unauthorized");
+      }
+
+      await deleteDoc(docRef);
     } catch (error) {
       console.error("Error deleting work order:", error);
       throw error;
