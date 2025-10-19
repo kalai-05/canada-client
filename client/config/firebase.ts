@@ -1,25 +1,16 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+// Firebase configuration - optional integration
+// Users can connect Firebase through the MCP integrations panel
+// For now, we'll create a mock implementation that uses localStorage
 
-// Firebase configuration - using a demo/public config
-// In production, use environment variables for sensitive data
-const firebaseConfig = {
-  apiKey: "AIzaSyDemoKeyForAirsonicApp123456789",
-  authDomain: "airsonic-work-manager.firebaseapp.com",
-  projectId: "airsonic-work-manager",
-  storageBucket: "airsonic-work-manager.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abcdef1234567890"
+export const db = null;
+export const auth = null;
+
+// Note: To use real Firebase, users should:
+// 1. Click "Connect to Firebase" in the MCP integrations panel
+// 2. Set their Firebase project configuration
+// 3. Replace this file with actual Firebase initialization
+
+export const isFirebaseConfigured = () => {
+  // Check if Firebase is configured via environment or mock data
+  return false; // Update this when Firebase is configured
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firestore
-export const db = getFirestore(app);
-
-// Initialize Auth
-export const auth = getAuth(app);
-
-export default app;
