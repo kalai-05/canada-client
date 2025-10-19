@@ -169,7 +169,7 @@ export default function Dashboard() {
                 className="bg-white text-red-600 hover:bg-gray-100"
               >
                 <Plus className="w-5 h-5 mr-2" />
-                Create Your First Work Order
+                Create Your Work Order
               </Button>
             </Link>
           ) : (

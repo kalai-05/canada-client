@@ -19,12 +19,25 @@ const COLLECTION_NAME = "workOrders";
 export const firestoreService = {
   async createWorkOrder(workOrder: Omit<WorkOrder, "id">, userId: string) {
     try {
-      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+      // Convert the work order data to Firestore-compatible format
+      const firestoreData = {
         ...workOrder,
         userId,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
-      });
+        // Ensure dates are properly converted
+        date: workOrder.date, // This should be a string in YYYY-MM-DD format
+        // Convert any nested objects that might need special handling
+        checklist: workOrder.checklist || {},
+        siteConditions: workOrder.siteConditions || {},
+        safetyInfo: workOrder.safetyInfo || {},
+        materials: workOrder.materials || [],
+        hours: workOrder.hours || [],
+      };
+
+      console.log("Saving to Firestore:", firestoreData);
+
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), firestoreData);
       return docRef.id;
     } catch (error) {
       console.error("Error creating work order:", error);
@@ -52,6 +65,7 @@ export const firestoreService = {
   },
 
   async getAllWorkOrders(userId: string) {
+    console.log("Fetching work orders for user:", userId);
     try {
       const q = query(
         collection(db, COLLECTION_NAME),
